@@ -48,16 +48,3 @@ export const Get = <T>(
   params?: Partial<Record<string, string | number>>,
   cancelToken?: CancelToken
 ): Promise<T> => Request.get<T>(path, { params, cancelToken }).then(extractor);
-
-export const Post = <T>(
-  path: string,
-  payload: unknown,
-  cancelToken?: CancelToken
-): Promise<T> =>
-  Request.post<T>(path, payload, { cancelToken }).then(extractor);
-
-export const Put = <T>(
-  path: string,
-  payload: unknown,
-  cancelToken?: CancelToken
-): Promise<T> => Request.put<T>(path, payload, { cancelToken }).then(extractor);

@@ -1,12 +1,13 @@
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { AsyncTypeahead } from "react-bootstrap-typeahead";
 import { useSearchParams } from "react-router-dom";
 import { Option } from "react-bootstrap-typeahead/types/types";
 
 import { GetSearchSymbol } from "Services";
+import Axios, { CancelTokenSource } from "axios";
 
 interface Props {
   setValue: React.Dispatch<React.SetStateAction<string>>;
@@ -21,7 +22,8 @@ const SearchBox: React.FC<Props> = ({ setValue }) => {
   const [options, setOptions] = useState<Array<IOption>>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selected, setSelected] = useState<any>([]);
+  const [selected, setSelected] = useState<Array<IOption>>([]);
+  const Source = useRef<CancelTokenSource>();
 
   const handleValueChange = (e: Array<Option>) => {
     if (!e.length) return setSelected([]);
@@ -47,7 +49,13 @@ const SearchBox: React.FC<Props> = ({ setValue }) => {
   const getSearchOptions = async (q: string, queryParamSelect?: boolean) => {
     setIsLoading(true);
     try {
-      const response = await GetSearchSymbol(q);
+      if (Source.current) {
+        Source.current.cancel();
+      }
+      Source.current = Axios.CancelToken.source();
+
+      const response = await GetSearchSymbol(q, Source.current.token);
+
       if (response.bestMatches) {
         let optionValues: Array<IOption> = [];
         optionValues = response.bestMatches.map((ele, index) => ({
@@ -92,6 +100,7 @@ const SearchBox: React.FC<Props> = ({ setValue }) => {
         selected={selected}
         renderMenuItemChildren={renderOption}
         useCache={false}
+        delay={5}
       />
     </>
   );

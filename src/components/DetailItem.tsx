@@ -13,28 +13,23 @@ interface IProps {
 
 const useStyles = (
   isExpanded: boolean
-): Record<string, React.CSSProperties> => {
-  let styles: Record<string, React.CSSProperties> = {
-    value: {
-      textOverflow: ".show",
-      overflow: "hidden",
-      display: "-webkit-inline-box",
-      whiteSpace: "normal",
-    },
-    showMore: {
-      cursor: "pointer",
-      color: "#0d6efd",
-      textAlign: "end",
-    },
-  };
-  const expand: React.CSSProperties = {
-    WebkitLineClamp: "3",
-    WebkitBoxOrient: "vertical",
-  };
-
-  if (isExpanded) styles.value = { ...styles.value, ...expand };
-  return styles;
-};
+): Record<string, React.CSSProperties> => ({
+  value: {
+    textOverflow: ".show",
+    overflow: "hidden",
+    display: "-webkit-inline-box",
+    whiteSpace: "normal",
+    ...(isExpanded && {
+      WebkitLineClamp: "3",
+      WebkitBoxOrient: "vertical",
+    }),
+  },
+  showMore: {
+    cursor: "pointer",
+    color: "#0d6efd",
+    textAlign: "end",
+  },
+});
 
 const DetailItem: React.FC<IProps> = ({
   title,

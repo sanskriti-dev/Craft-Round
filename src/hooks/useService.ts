@@ -39,6 +39,7 @@ const useService = <A extends unknown[], T>(
     }
     Source.current = Axios.CancelToken.source();
     !waiting && setWaiting(true);
+
     (api as CallableFunction)(...options, Source.current.token)
       .then(onData)
       .catch(onError);
